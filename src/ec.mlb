@@ -1,0 +1,17 @@
+$(SML_LIB)/basis/basis.mlb
+$(SML_LIB)/mlyacc-lib/mlyacc-lib.mlb
+$(SML_LIB)/smlnj-lib/Util/smlnj-lib.mlb
+
+tigerAst.sml         (* the syntax                                   *)
+temp.sml             (* the temp type used                           *)
+mips.sml             (* mips statements                              *)
+translate.sml        (* The translate function                       *)
+ir.sml               (* the ir and conde generation                  *)
+tigerExpr.grm.sig    (* The signature file generated for the grammar *)
+tigerExpr.grm.sml    (* The parser                                   *)
+tigerExpr.lex.sml    (* The lexer for the machine                    *)
+basicblock.sml
+treeir.sml
+graph.sml
+
+ec.sml

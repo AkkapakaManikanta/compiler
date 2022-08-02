@@ -1,0 +1,10 @@
+y := 8;
+#comment
+for x = 0 to 5 
+do     #comment
+print x + y   
+done;     #comment
+
+x := 8;
+#comment
+z := x * (y /2);

@@ -1,0 +1,77 @@
+(* This is the preamble where you can have arbitrary sml code. For us
+it is empty *)
+
+%%
+(* The terminals or tokens of the language *)
+
+%term CONST of int
+    | PLUS
+    | MINUS
+    | MUL
+    | EOF
+    | NEWLINE
+    | DIV
+    | OPEN_PARENTHESIS
+    | CLOSE_PARENTHESIS
+    | ASSIGN
+    | PRINT
+    | VAR of string
+    | FOR
+    | TO
+    | DONE
+    | DO
+    | EQUAL
+    | SEMICOLON 
+    
+(* The nonterminals of the language *)
+%nonterm INST    of TigerAst.Inst
+       | INSTS    of TigerAst.Inst list
+       | PROGRAM of TigerAst.Inst list
+       | EXPR of TigerAst.Expr
+       
+
+%eop EOF (* What token to use as end of parsing token              *)
+%verbose (* Generates a printed form of the table in expr.grm.desc *)
+%pure
+
+
+%name TigerAst (* The prefix to use on the name of LrValFun structure *)
+
+
+%noshift EOF
+(*
+
+Operator precedence and associativity. The %left says the operator is
+left associative and the precedence increase as you go down this list.
+
+*)
+
+%left PLUS MINUS  (* + and - are of same precedence *)
+%left MUL DIV      (* higher than + and -            *)	  
+%left OPEN_PARENTHESIS CLOSE_PARENTHESIS
+
+(* The type that captures position in the input *)
+%pos int
+
+%%
+
+PROGRAM : INSTS                 ( INSTS )
+	| INSTS NEWLINE         ( INSTS )
+	| NEWLINE INSTS         ( INSTS )
+
+INSTS    : (* empty *)           ( []                )
+	| INST NEWLINE INSTS     ( INST :: INSTS     )
+	| INST SEMICOLON NEWLINE INSTS (INST :: INSTS)
+
+INST    : VAR ASSIGN EXPR       ( TigerAst.Assign (VAR, EXPR)) 
+	| PRINT EXPR            ( TigerAst.Print EXPR )
+	| FOR VAR EQUAL CONST TO CONST NEWLINE DO INSTS DONE SEMICOLON (TigerAst.For (VAR, CONST1, CONST2, INSTS))
+	
+	
+EXPR     : CONST                (TigerAst.Const CONST     )
+        | EXPR PLUS EXPR         ( TigerAst.plus  EXPR1 EXPR2 )
+	| EXPR MINUS EXPR        ( TigerAst.minus EXPR1 EXPR2 )
+	| EXPR MUL   EXPR        ( TigerAst.mul   EXPR1 EXPR2 )
+	| EXPR DIV  EXPR         ( TigerAst.divi   EXPR1 EXPR2 )
+	| OPEN_PARENTHESIS EXPR CLOSE_PARENTHESIS (EXPR)
+	| VAR                    ( TigerAst.Var VAR )
